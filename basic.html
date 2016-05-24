@@ -7,17 +7,53 @@
     <script src="./js/knockout-3.4.0.js"></script>
     <script src="./js/jquery-1.10.2.js"></script>
     <script type="text/javascript">
-        $(function(){
-            var dataModel = function(){
-                this.id = ko.observable("0");
-                this.name = ko.observable("");
-                this.size = ko.observable("L");
-                this.saleChannels = ["BeiJing","ShenZhen","ShangHai"];
-                this.fullInfo = ko.pureComputed(function(){
-                    return "id:" + this.id() +", name:" + this.name() + ", size:" + this.size() + ".";
-                }, this);
-            };
+        var dataModel = function(){
+            this.id = ko.observable("0");
+            this.name = ko.observable("zhang san");
+            this.size = ko.observable("L");
+            this.saleChannels = ["BeiJing","ShenZhen","ShangHai"];
+            this.fullInfo = ko.pureComputed(function(){
+                return "id:" + this.id() +", name:" + this.name() + ", size:" + this.size() + ".";
+            }, this);
+            this.anotherFullInfo = ko.computed(function(){
+                return "ID:" + this.id().toUpperCase() +", NAME:" + this.name().toUpperCase() + ", SIZE:" + this.size() + ".";
+            },this);
             
+            //history list
+            this.historyList = ko.observableArray([
+                {date:'2016-1-1',name:'LiSi1',buyCnt:32,price:25,
+                    routes:[
+                        {from:'BeiJing',to:'TianJin',start:'2016-1-2',end:'2016-1-3'},
+                        {from:'TianJin',to:'ShiJiaZhuang',start:'2016-1-2',end:'2016-1-3'},
+                        {from:'ShiJiaZhuang',to:'ChongQing',start:'2016-1-2',end:'2016-1-3'}
+                    ]},
+                {date:'2016-1-2',name:'LiSi2',buyCnt:42,price:18,
+                    routes:[
+                        {from:'BeiJing',to:'TianJin',start:'2016-1-2',end:'2016-1-3'},
+                        {from:'TianJin',to:'ShiJiaZhuang',start:'2016-1-2',end:'2016-1-3'},
+                        {from:'ShiJiaZhuang',to:'ChongQing',start:'2016-1-2',end:'2016-1-3'}
+                    ]
+                },
+                {date:'2016-1-3',name:'LiSi3',buyCnt:25,price:22,
+                    routes:[
+                        {from:'BeiJing',to:'TianJin',start:'2016-1-2',end:'2016-1-3'},
+                        {from:'TianJin',to:'ShiJiaZhuang',start:'2016-1-2',end:'2016-1-3'},
+                        {from:'ShiJiaZhuang',to:'ChongQing',start:'2016-1-2',end:'2016-1-3'}
+                    ]
+                },
+                {date:'2016-1-4',name:'LiSi4',buyCnt:17,price:30,
+                    routes:[
+                        {from:'BeiJing',to:'TianJin',start:'2016-1-2',end:'2016-1-3'},
+                        {from:'TianJin',to:'ShiJiaZhuang',start:'2016-1-2',end:'2016-1-3'},
+                        {from:'ShiJiaZhuang',to:'ChongQing',start:'2016-1-2',end:'2016-1-3'}
+                    ]
+                },
+            ]);
+            
+            this.refreshDate = ko.observable(new Date().toTimeString());
+        };
+        
+        $(function(){
             ko.applyBindings(new dataModel());
         });
     </script>
@@ -26,21 +62,31 @@
             font-size: 12px;
         }
         
-        span {
+        #main span {
             width: 100px;
             text-align: left;
             display: inline-block;
         }
         
-        li {
+        #main li {
             line-height: 25px;
             list-style: none;
+        }
+        
+        #main textarea {
+            width: 300px;
+            height: 100px;
+        }
+        
+        #container li{
+            display: inline-block;
+            list-style-type: decimal;
         }
     </style>
 </head>
 
 <body>
-    <ul>
+    <ul id="main">
         <li><span>id:</span>
             <input id="id" data-bind="value: id, valueUpdate:'afterkeydown'" />
         </li>
@@ -54,9 +100,34 @@
             <label><input type="radio" name="size" value="XL" data-bind="checked: size"/>XL</label>
         </li>
         <li><span>full info:</span>
-            <textarea readonly="readonly" data-bind="text: fullInfo"></textarea>
+            <textarea readonly="readonly" data-bind="text: fullInfo" disabled></textarea>
+        </li>
+        <li><span>FULL INFO:</span>
+            <textarea readonly="readonly" data-bind="text: anotherFullInfo" disabled></textarea>
         </li>
     </ul>
+    <div id="container" data-bind="foreach: {data: historyList, as: 'history'}">
+        <div class="detail">
+            <span data-bind="text: $index"></span>
+            <span data-bind="text: date"></span>
+            <span data-bind="text: name"></span>
+            <span data-bind="text: buyCnt"></span>
+            <span data-bind="text: $data.price"></span>
+            <span data-bind="text: $parent.refreshDate"></span>
+            <div class="list">
+                <ul data-bind="foreach: {data: routes, as:'route'}">
+                    <span>from:</span>
+                    <li data-bind="text: route.from"></li>
+                    <span>to:</span>
+                    <li data-bind="text: route.to"></li>
+                    <span>start:</span>
+                    <li data-bind="text: route.start"></li>
+                    <span>end:</span>
+                    <li data-bind="text: route.end"></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
