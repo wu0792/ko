@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>basic demo using ko</title>
+    <script src="./js/knockout-3.4.0.js"></script>
+    <script src="./js/jquery-1.10.2.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            var dataModel = function(){
+                this.id = ko.observable("0");
+                this.name = ko.observable("");
+                this.size = ko.observable("L");
+                this.saleChannels = ["BeiJing","ShenZhen","ShangHai"];
+                this.fullInfo = ko.pureComputed(function(){
+                    return "id:" + this.id() +", name:" + this.name() + ", size:" + this.size() + ".";
+                }, this);
+            };
+            
+            ko.applyBindings(new dataModel());
+        });
+    </script>
+    <style>
+        html {
+            font-size: 12px;
+        }
+        
+        span {
+            width: 100px;
+            text-align: left;
+            display: inline-block;
+        }
+        
+        li {
+            line-height: 25px;
+            list-style: none;
+        }
+    </style>
+</head>
+
+<body>
+    <ul>
+        <li><span>id:</span>
+            <input id="id" data-bind="value: id, valueUpdate:'afterkeydown'" />
+        </li>
+        <li><span>name:</span>
+            <input id="name" data-bind="value: name, valueUpdate:'afterkeydown'" />
+        </li>
+        <li><span>saleChannels:</span><input type="text" id="saleChannels"></li>
+        <li><span>size:</span>
+            <label><input type="radio" name="size" value="S" data-bind="checked: size"/>X</label>
+            <label><input type="radio" name="size" value="L" data-bind="checked: size"/>L</label>
+            <label><input type="radio" name="size" value="XL" data-bind="checked: size"/>XL</label>
+        </li>
+        <li><span>full info:</span>
+            <textarea readonly="readonly" data-bind="text: fullInfo"></textarea>
+        </li>
+    </ul>
+</body>
+
+</html>
