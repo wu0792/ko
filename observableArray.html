@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>property binding</title>
+    <script src="./js/knockout-3.4.0.js"></script>
+    <script src="./js/jquery-1.10.2.js"></script>
+    <script type="text/javascript">
+        var employee = function(){
+            this.name = ko.observable("");
+            this.isAvaliable = ko.observable(true);
+            this.phoneNum = ko.observable("");
+            this.gender = ko.observable("M");
+        }
+        
+        var employeeList = function(items){
+            var _this = this;
+            this.items = ko.observableArray(items);
+            this.addItem = function(item){
+                var emp = new employee();
+                emp.name(item.name());
+                emp.phoneNum(item.phoneNum());
+                emp.gender(item.gender());
+                emp.isAvaliable(item.isAvaliable()); 
+                
+                _this.items.push(emp);
+            };
+            this.removeItem = function(item){
+                _this.items.remove(item);
+            };
+        }
+        
+        $(function(){
+            var e1 = new employee();
+            e1.name('lisa');
+            e1.isAvaliable(true);
+            e1.phoneNum('25441');
+            e1.gender('F');
+            
+            var e2 = new employee();
+            e2.name('keke');
+            e2.isAvaliable(false);
+            e2.phoneNum('15022');
+            e2.gender('M');
+            
+            var eList = [];
+            eList.push(e1);
+            eList.push(e2);
+            
+            var eModelList = new employeeList(eList);            
+            ko.applyBindings(eModelList, $('#employees')[0]);
+            
+            var newEmp = new employee();
+            newEmp.addItem = function(){
+                eModelList.addItem(this);
+                this.name('');
+                this.isAvaliable(true);
+                this.phoneNum('');
+                this.gender('M');
+            };
+            ko.applyBindings(newEmp, $('#addArea')[0]);
+        })
+    </script>
+</head>
+
+<body>
+    <div>
+        <div id="addArea">
+            <input data-bind="value: name" class="input" />
+            <label>
+                <input data-bind="attr: {'name': 'isAvalibale-Add'}, checked: isAvaliable" type="checkbox" />
+            </label>
+            <input data-bind="value: phoneNum, enable: isAvaliable" class="input" />
+            <input data-bind="text: gender, attr: {'name': 'gender-Add'}, checked: gender, enable: isAvaliable" class="input" type="radio"
+                value="M" />
+            <input data-bind="text: gender, attr: {'name': 'gender-Add'}, checked: gender, enable: isAvaliable" class="input" type="radio"
+                value="F" />
+            <input type="button" data-bind="click: addItem" value="AddItem" />
+        </div>
+        <ul id="employees" data-bind="foreach: items">
+            <li>
+                <input data-bind="value: name" class="input" />
+                <label>
+                    <input data-bind="attr: {'name': 'isAvalibale' + $index()}, checked: isAvaliable" type="checkbox" />
+                </label>
+                <input data-bind="value: phoneNum, enable: isAvaliable" class="input" />
+                <input data-bind="text: gender, attr: {'name': 'gender' + $index()}, checked: gender, enable: isAvaliable" class="input"
+                    type="radio" value="M" />
+                <input data-bind="text: gender, attr: {'name': 'gender' + $index()}, checked: gender, enable: isAvaliable" class="input"
+                    type="radio" value="F" />
+                <input type="button" data-bind="click: $parent.removeItem" value="RemoveItem" />
+            </li>
+        </ul>
+    </div>
+</body>
