@@ -12,6 +12,7 @@
             this.isAvaliable = ko.observable(true);
             this.phoneNum = ko.observable("");
             this.gender = ko.observable("M");
+            this.mode = ko.observable("view");
         }
         
         var employeeList = function(items){
@@ -29,6 +30,15 @@
             this.removeItem = function(item){
                 _this.items.remove(item);
             };
+            this.setEditState = function(item){
+                item.mode('edit');
+            };
+            this.setViewState = function(item){
+                item.mode('view');
+            };
+            this.mode = function(item){
+                return item.mode();
+            }
         }
         
         $(function(){
@@ -62,6 +72,44 @@
             ko.applyBindings(newEmp, $('#addArea')[0]);
         })
     </script>
+    <script type="text/html" id="view">
+        <li>
+            <input data-bind="value: name" class="input" disabled />
+            <label>
+                    <input data-bind="attr: {'name': 'isAvalibale' + $index()}, checked: isAvaliable" type="checkbox" disabled />IsAvalibale
+                </label>
+            <input data-bind="value: phoneNum" class="input" disabled />
+            <label data-bind="attr: {'for': 'genderF' + $index()}">
+                <input data-bind="text: gender, attr: {'name': 'gender' + $index(), 'id': 'genderF' + $index()}, checked: gender" disabled class="input"
+                type="radio" value="M" />Femal
+            </label>
+            <label data-bind="attr: {'for': 'genderM' + $index()}">
+                <input data-bind="text: gender, attr: {'name': 'gender' + $index(), 'id': 'genderM' + $index()}, checked: gender" disabled class="input"
+                type="radio" value="M" />Male
+            </label>
+            <input type="button" data-bind="click: $parent.removeItem" value="RemoveItem" />
+            <input type="button" data-bind="click: $parent.setEditState" value="Edit" />
+        </li>
+    </script>
+    <script type="text/html" id="edit">
+        <li>
+            <input data-bind="value: name" class="input" />
+            <label>
+                    <input data-bind="attr: {'name': 'isAvalibale' + $index()}, checked: isAvaliable" type="checkbox" />IsAvalibale
+                </label>
+            <input data-bind="value: phoneNum, enable: isAvaliable" class="input" />
+            <label data-bind="attr: {'for': 'genderF' + $index()}">
+                <input data-bind="text: gender, attr: {'name': 'gender' + $index(), 'id': 'genderF' + $index()}, checked: gender, enable: isAvaliable" class="input"
+                type="radio" value="M" />Femal
+            </label>
+            <label data-bind="attr: {'for': 'genderM' + $index()}">
+                <input data-bind="text: gender, attr: {'name': 'gender' + $index(), 'id': 'genderM' + $index()}, checked: gender, enable: isAvaliable" class="input"
+                type="radio" value="M" />Male
+            </label>
+            <input type="button" data-bind="click: $parent.removeItem" value="RemoveItem" />
+            <input type="button" data-bind="click: $parent.setViewState" value="Done" />
+        </li>
+    </script>
 </head>
 
 <body>
@@ -69,28 +117,21 @@
         <div id="addArea">
             <input data-bind="value: name" class="input" />
             <label>
-                <input data-bind="attr: {'name': 'isAvalibale-Add'}, checked: isAvaliable" type="checkbox" />
+                <input data-bind="attr: {'name': 'isAvalibale-Add'}, checked: isAvaliable" type="checkbox" />IsAvalibale
             </label>
             <input data-bind="value: phoneNum, enable: isAvaliable" class="input" />
-            <input data-bind="text: gender, attr: {'name': 'gender-Add'}, checked: gender, enable: isAvaliable" class="input" type="radio"
-                value="M" />
-            <input data-bind="text: gender, attr: {'name': 'gender-Add'}, checked: gender, enable: isAvaliable" class="input" type="radio"
-                value="F" />
+            <label data-bind="attr: {'for': 'genderFAdd'}">
+                <input data-bind="text: gender, attr: {'name': 'genderAdd', 'id': 'genderFAdd'}, checked: gender, enable: isAvaliable" class="input"
+                type="radio" value="M" />Femal
+            </label>
+            <label data-bind="attr: {'for': 'genderMAdd'}">
+                <input data-bind="text: gender, attr: {'name': 'genderAdd', 'id': 'genderMAdd'}, checked: gender, enable: isAvaliable" class="input"
+                type="radio" value="M" />Male
+            </label>
             <input type="button" data-bind="click: addItem" value="AddItem" />
         </div>
-        <ul id="employees" data-bind="foreach: items">
-            <li>
-                <input data-bind="value: name" class="input" />
-                <label>
-                    <input data-bind="attr: {'name': 'isAvalibale' + $index()}, checked: isAvaliable" type="checkbox" />
-                </label>
-                <input data-bind="value: phoneNum, enable: isAvaliable" class="input" />
-                <input data-bind="text: gender, attr: {'name': 'gender' + $index()}, checked: gender, enable: isAvaliable" class="input"
-                    type="radio" value="M" />
-                <input data-bind="text: gender, attr: {'name': 'gender' + $index()}, checked: gender, enable: isAvaliable" class="input"
-                    type="radio" value="F" />
-                <input type="button" data-bind="click: $parent.removeItem" value="RemoveItem" />
-            </li>
+        <ul id="employees" data-bind="template: {name: mode, foreach: items}">
+
         </ul>
     </div>
 </body>
