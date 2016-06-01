@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>property binding</title>
+    <script src="./js/knockout-3.4.0.js"></script>
+    <script src="./js/jquery-1.10.2.js"></script>
+    <script type="text/javascript">
+        var employee = function(){
+            this.name = ko.observable("");
+            this.isAvaliable = ko.observable(true);
+            this.phoneNum = ko.observable("");
+            this.gender = ko.observable("M");
+            this.fullInfo = ko.computed({
+                read:function(){
+                    return this.name() + "," + this.isAvaliable() + "," + this.phoneNum() + "," + this.gender();
+                },
+                write:function(value){
+                    var array = value.split(',');
+                    if(array.length == 4){
+                        this.name(array[0]);
+                        this.isAvaliable(array[1] == '1'|| array[1]=='true');
+                        this.phoneNum(array[2]);
+                        this.gender(array[3]);
+                    }
+                }
+            }, this).extend({ rateLimit: { method: "modify" } });
+            this.modify = function(){}
+        }
+        
+        var employeeList = function(items){
+            this.items = ko.observableArray(items);
+            this.beginEdit = function(item){
+                ko.cleanNode($('#modifyArea')[0]);
+                ko.applyBindings(item, $('#modifyArea')[0]);
+            }
+        }
+        
+        $(function(){
+            var e1 = new employee();
+            e1.name('lisa');
+            e1.isAvaliable(true);
+            e1.phoneNum('25441');
+            e1.gender('F');
+            
+            var e2 = new employee();
+            e2.name('keke');
+            e2.isAvaliable(false);
+            e2.phoneNum('15022');
+            e2.gender('M');
+            
+            var eList = [];
+            eList.push(e1);
+            eList.push(e2);
+            
+            var eModelList = new employeeList(eList);            
+            ko.applyBindings(eModelList, $('#employees')[0]);
+        })
+    </script>
+</head>
+
+<body>
+    <div>
+        <div id="modifyArea">
+            <input data-bind="value: fullInfo" class="input" style="width:200px;" />
+            <input type="button" data-bind="click: modify" value="SubmitModify" />
+        </div>
+        <ul id="employees" data-bind="foreach: items">
+            <li>
+                <input data-bind="value: name" class="input" disabled />
+                <label>
+                    <input data-bind="attr: {'name': 'isAvalibale' + $index()}, checked: isAvaliable" type="checkbox" disabled />IsAvalibale
+                </label>
+                <input data-bind="value: phoneNum" class="input" disabled />
+                <label data-bind="attr: {'for': 'genderF' + $index()}">
+                <input data-bind="text: gender, attr: {'name': 'gender' + $index(), 'id': 'genderF' + $index()}, checked: gender" disabled class="input"
+                type="radio" value="F" />Femal
+            </label>
+                <label data-bind="attr: {'for': 'genderM' + $index()}">
+                <input data-bind="text: gender, attr: {'name': 'gender' + $index(), 'id': 'genderM' + $index()}, checked: gender" disabled class="input"
+                type="radio" value="M" />Male
+            </label>
+                <input type="button" data-bind="click: $parent.beginEdit" value="Edit" />
+            </li>
+        </ul>
+    </div>
+</body>
