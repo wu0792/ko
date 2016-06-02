@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>covnert</title>
+    <script src="./js/knockout-3.4.0.js"></script>
+    <script src="./js/knockout.mapping-latest.js"></script>
+    <script src="./js/jquery-1.10.2.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            var countryJS = {
+                name: "",
+                location: "",
+                curDate: ""
+            };
+            
+            var countryObservable = ko.mapping.fromJS(countryJS);            
+            ko.applyBindings(countryObservable, $('#coutnry')[0]);
+            
+            var i = 0;
+            setInterval(function(){
+                i++;
+                var newCountryJS = {
+                    name: "CN" + i,
+                    location: "LAT:" + (i * i) % 85 + ",LONG:" + (i * i * i) % 120,
+                    curDate: new Date()
+                };
+                
+                ko.mapping.fromJS(newCountryJS, countryObservable);
+            }, 2000);
+        })
+    </script>
+</head>
+
+<body>
+    <div id="coutnry">
+        <span>name:</span>
+        <label data-bind="text: name" style="width:200px;"></label>
+        <br>
+        <span>location:</span>
+        <label data-bind="text: location" style="width:200px;"></label>
+        <br>
+        <span>curDate:</span>
+        <label data-bind="text: curDate" style="width:200px;"></label>
+        <br>
+
+    </div>
+</body>
