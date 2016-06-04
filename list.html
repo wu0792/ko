@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>covnert</title>
+    <script src="./js/knockout-3.4.0.js"></script>
+    <script src="./js/knockout.mapping-latest.js"></script>
+    <script src="./js/jquery-1.10.2.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            var listModel = {
+                list: ko.observableArray(),
+                view: function(item){
+                    alert(item.name);
+                },
+                selectAll: function(){
+                    $.each(this.list(),function(i, n){
+                        n.checked(true)
+                    })
+                },
+                clearSelect: function(){
+                    $.each(this.list(),function(i, n){
+                        n.checked(false)
+                    })
+                },
+                 reverseSelect: function(){
+                    $.each(this.list(),function(i, n){
+                        n.checked(!n.checked())
+                    })
+                }
+            };
+            
+            listModel.isEmpty = ko.computed(function(){
+                    return this.list().length==0;
+                }, listModel)
+            
+            ko.applyBindings(listModel);
+            $('#Load').click(function(){
+                listModel.list([])
+                for(var i = 0; i < 30; i++){
+                    var newCountryJS = {
+                        name: "CN" + i,
+                        location: "LAT:" + (i * i) % 85 + ",LONG:" + (i * i * i) % 120,
+                        curDate: new Date(),
+                        checked: ko.observable(false)
+                    };
+                    
+                    listModel.list.push(newCountryJS);
+                }
+            });
+        })
+    </script>
+</head>
+
+<body>
+    <div>
+        <input type="button" value="Load" id="Load" />
+        <input type="button" value="SelectAll" data-bind="click: selectAll,disable: isEmpty" />
+        <input type="button" value="clearSelect" data-bind="click: clearSelect,disable: isEmpty" />
+        <input type="button" value="reverseSelect" data-bind="click: reverseSelect,disable: isEmpty" />
+    </div>
+    <table>
+        <tr>
+            <td>select</td>
+            <td>seq</td>
+            <td>name</td>
+            <td>location</td>
+            <td>date</td>
+            <td>oper</td>
+        </tr>
+        <!--ko foreach: {data: list}-->
+        <tr>
+            <td><input data-bind="attr: {'id': 'chk' + $data.name}, checked: checked" type="checkbox" /></td>
+            <td><label data-bind="text: $index() + 1"></label></td>
+            <td><label data-bind="text: name"></label></td>
+            <td><label data-bind="text: location"></label></td>
+            <td><label data-bind="text: curDate"></label></td>
+            <td><a data-bind="click: $root.view">View<a></td>
+        </tr>
+        <!--/ko-->
+    </table>
+</body>
